@@ -1,0 +1,649 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Posts on Renkai&#39;s blog</title>
+    <link>http://localhost:1313/post/</link>
+    <description>Recent content in Posts on Renkai&#39;s blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-CN</language>
+    <lastBuildDate>Fri, 14 Aug 2015 17:41:01 +0800</lastBuildDate>
+    <atom:link href="http://localhost:1313/post/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>scala 从入门到入门&#43;</title>
+      <link>http://localhost:1313/post/scala-primer/</link>
+      <pubDate>Fri, 14 Aug 2015 17:41:01 +0800</pubDate>
+      
+      <guid>http://localhost:1313/post/scala-primer/</guid>
+      <description>
+
+&lt;p&gt;新手向,面向刚从java过渡到scala的同学,目的是写出已已易于维护和阅读的代码.&lt;/p&gt;
+
+&lt;h2 id=&#34;从语句到表达式:0cf58323c62a1ce60f25579926a25322&#34;&gt;从语句到表达式&lt;/h2&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;语句(statement): 一段可执行的代码
+表达式(expression): 一段可以被求值的代码&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;在Java中语句和表达式是有区分的,表达式必须在return或者等号右侧,而在scala中,一切都是表达式.&lt;/p&gt;
+
+&lt;p&gt;一个例子:
+假设我们在公司的内网和外网要从不同的域名访问一样的机器&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;//Java代码
+String urlString = null;
+String hostName = InetAddress.getLocalHost().getHostName();
+if (isInnerHost(hostName)) {
+  urlString = &amp;quot;http://inner.host&amp;quot;;
+} else {
+  urlString = &amp;quot;http://outter.host&amp;quot;;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;刚转到scala的人很可能这么写&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;var urlString: String = null
+var hostName = InetAddress.getLocalHost.getHostName
+if (isInnerHost(hostName)) {
+  urlString = &amp;quot;http://inner.host&amp;quot;
+} else {
+  urlString = &amp;quot;http://outter.host&amp;quot;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;我们让它更像scala一点吧&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;val hostName = InetAddress.getLocalHost.getHostName
+val urlString = if (isInnerHost(hostName)) {
+  &amp;quot;http://inner.host&amp;quot;
+} else {
+  &amp;quot;http://outter.host&amp;quot;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;这样做的好处都有啥?&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;ol&gt;
+&lt;li&gt;代码简练,符合直觉&lt;/li&gt;
+&lt;li&gt;urlString 是值而不是变量,有效防止 urlString 在后续的代码中被更改(编译时排错)&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;很多时候,我们编程时说的安全并不是指怕被黑客破坏掉,而是预防自己因为逗比而让程序崩了.&lt;/p&gt;
+
+&lt;h2 id=&#34;纯函数和非纯函数:0cf58323c62a1ce60f25579926a25322&#34;&gt;纯函数和非纯函数&lt;/h2&gt;
+
+&lt;p&gt;纯函数（Pure Function）是这样一种函数——输入输出数据流全是显式（Explicit）的。
+显式（Explicit）的意思是，函数与外界交换数据只有一个唯一渠道——参数和返回值；函数从函数外部接受的所有输入信息都通过参数传递到该函数内部；函数输出到函数外部的所有信息都通过返回值传递到该函数外部。&lt;/p&gt;
+
+&lt;p&gt;如果一个函数通过隐式（Implicit）方式，从外界获取数据，或者向外部输出数据，那么，该函数就不是纯函数，叫作非纯函数（Impure Function）。
+隐式（Implicit）的意思是，函数通过参数和返回值以外的渠道，和外界进行数据交换。比如，读取全局变量，修改全局变量，都叫作以隐式的方式和外界进行数据交换；比如，利用I/O API（输入输出系统函数库）读取配置文件，或者输出到文件，打印到屏幕，都叫做隐式的方式和外界进行数据交换。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;//一些例子
+//纯函数
+def add(a:Int,b:Int) = a + b
+//非纯函数
+var a = 1
+def addA(b:Int) = a + b
+ 
+def add(a:Int,b:Int) = {
+  println(s&amp;quot;a:$a b:$b&amp;quot;)
+  a + b
+}
+def randInt() = Random.nextInt()
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;纯函数的好处-来自维基百科:0cf58323c62a1ce60f25579926a25322&#34;&gt;纯函数的好处(来自维基百科)&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;无状态,线程安全,不需要线程同步.&lt;/li&gt;
+&lt;li&gt;纯函数相互调用组装起来的函数,还是纯函数.&lt;/li&gt;
+&lt;li&gt;应用程序或者运行环境(Runtime)可以对纯函数的运算结果进行缓存,运算加快速度.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;纯函数的好处-来自我的经验:0cf58323c62a1ce60f25579926a25322&#34;&gt;纯函数的好处(来自我的经验)&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;单元测试非常方便!&lt;/li&gt;
+&lt;li&gt;分布式/并发环境下,断点调试的方式无以为继,你需要单元测试.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;单元测试什么的,赶紧去 &lt;a href=&#34;http://www.scalatest.org&#34;&gt;http://www.scalatest.org&lt;/a&gt; 试试吧&lt;/p&gt;
+
+&lt;h2 id=&#34;惰性求值-call-by-name:0cf58323c62a1ce60f25579926a25322&#34;&gt;惰性求值/Call by name&lt;/h2&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;维基百科中惰性求值的解释
+惰性求值（Lazy Evaluation），又称惰性计算、懒惰求值，是一个计算机编程中的一个概念，它的目的是要最小化计算机要做的工作。它有两个相关而又有区别的含意，可以表示为“延迟求值”和“最小化求值”，本条目专注前者，后者请参见最小化计算条目。除可以得到性能的提升外，惰性计算的最重要的好处是它可以构造一个无限的数据类型。
+惰性求值的相反是及早求值，这是一个大多数编程语言所拥有的普通计算方式。&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h3 id=&#34;惰性求值不是新鲜事:0cf58323c62a1ce60f25579926a25322&#34;&gt;惰性求值不是新鲜事&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code&gt;import scala.io.Source.fromFile
+val iter: Iterator[String] =
+  fromFile(&amp;quot;sampleFile&amp;quot;)
+    .getLines()
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;文件迭代器就用到了惰性求值.
+用户可以完全像操作内存中的数据一样操作文件,然而文件只有一小部分传入了内存中.&lt;/p&gt;
+
+&lt;h3 id=&#34;用lazy关键词指定惰性求值:0cf58323c62a1ce60f25579926a25322&#34;&gt;用lazy关键词指定惰性求值&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code&gt;lazy val firstLazy = {
+  println(&amp;quot;first lazy&amp;quot;)
+  1
+}
+lazy val secondLazy = {
+  println(&amp;quot;second lazy&amp;quot;)
+  2
+} 
+def add(a:Int,b:Int) = {
+  a+b
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;//在 scala repl 中的结果
+scala&amp;gt; add(secondLazy,firstLazy)
+second lazy
+first lazy
+res0: Int = 3
+
+res0: Int = 3
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;second lazy 先于 first lazy输出了&lt;/p&gt;
+
+&lt;h3 id=&#34;call-by-value-就是函数参数的惰性求值:0cf58323c62a1ce60f25579926a25322&#34;&gt;Call by value 就是函数参数的惰性求值&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code&gt;def firstLazy = {
+  println(&amp;quot;first lazy&amp;quot;)
+  1
+}
+def secondLazy = {
+  println(&amp;quot;second lazy&amp;quot;)
+  2
+}
+def chooseOne(first: Boolean, a: Int, b: Int) = {
+  if (first) a else b
+}
+def chooseOneLazy(first: Boolean, a: =&amp;gt; Int, b: =&amp;gt; Int) = {
+  if (first) a else b
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;chooseOne(first = true, secondLazy, firstLazy)
+//second lazy
+//first lazy
+//res0: Int = 2
+chooseOneLazy(first = true, secondLazy, firstLazy)
+//second lazy
+//res1: Int = 2
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;对于非纯函数,惰性求值会产生和立即求值产生不一样的结果.&lt;/p&gt;
+
+&lt;h3 id=&#34;一个例子-假设你要建立一个本地缓存:0cf58323c62a1ce60f25579926a25322&#34;&gt;一个例子,假设你要建立一个本地缓存&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code&gt;//需要查询mysql等,可能来自于一个第三方jar包
+def itemIdToShopId: Int =&amp;gt; Int  
+var cache = Map.empty[Int, Int]
+def cachedItemIdToShopId(itemId: Int):Int = {
+  cache.get(itemId) match {
+    case Some(shopId) =&amp;gt; shopId
+    case None =&amp;gt;
+      val shopId = itemIdToShopId(itemId)
+      cache += itemId -&amp;gt; shopId
+      shopId
+  }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;罗辑没什么问题,但测试的时候不方便连mysql怎么办?&lt;/li&gt;
+&lt;li&gt;如果第三方jar包发生了改变,cachedItemIdToShopId也要发生改变.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;//用你的本地mock来测试程序
+def mockItemIdToSHopId: Int =&amp;gt; Int
+def cachedItemIdToShopId(itemId: Int): Int ={  
+  cache.get(itemId) match { 
+    case Some(shopId) =&amp;gt; shopId
+   case None =&amp;gt; 
+      val shopId = mockItemIdToSHopId(itemId)
+      cache += itemId -&amp;gt; shopId
+     shopId 
+  } 
+}   
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;在测试的时候用mock,提交前要换成线上的,反复测试的话要反复改动,非常令人沮丧.&lt;/li&gt;
+&lt;li&gt;手工操作容易忙中出错.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;//将远程请求的结果作为函数的一个参数
+def cachedItemIdToShopId(itemId: Int, remoteShopId: Int): Int = {   
+  cache.get(itemId) match { 
+    case Some(shopId) =&amp;gt; shopId 
+    case None =&amp;gt;    
+     val shopId = remoteShopId  
+     cache += itemId -&amp;gt; shopId  
+      shopId
+  } 
+}
+//调用这个函数
+cachedItemIdToShopId(itemId,itemIdToShopId(itemId))
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;函数对mysql的依赖没有了&lt;/li&gt;
+&lt;li&gt;不需要在测试和提交时切换代码&lt;/li&gt;
+&lt;li&gt;貌似引入了新问题?&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;没错,cache根本没有起应有的作用,函数每次执行的时候都调用了itemIdToShopId从远程取数据&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;//改成call by name就没有这个问题啦
+def cachedItemIdToShopId(itemId: Int, remoteShopId: =&amp;gt;Int): Int = { 
+  cache.get(itemId) match { 
+    case Some(shopId) =&amp;gt; shopId 
+    case None =&amp;gt;    
+     val shopId = remoteShopId  
+     cache += itemId -&amp;gt; shopId  
+      shopId
+  } 
+}
+//调用这个函数
+cachedItemIdToShopId(itemId,itemIdToShopId(itemId))
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;函数对mysql的依赖没有了&lt;/li&gt;
+&lt;li&gt;不需要在测试和提交时切换代码&lt;/li&gt;
+&lt;li&gt;只在需要的时候查询远程库&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;tuple-case-class-模式匹配:0cf58323c62a1ce60f25579926a25322&#34;&gt;Tuple/case class/模式匹配&lt;/h2&gt;
+
+&lt;h3 id=&#34;tuple为编程提供许多便利:0cf58323c62a1ce60f25579926a25322&#34;&gt;Tuple为编程提供许多便利&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;函数可以通过tuple返回多个值&lt;/li&gt;
+&lt;li&gt;tuple可以存储在容器类中,代替java bean&lt;/li&gt;
+&lt;li&gt;可以一次为多个变量赋值&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;使用tuple的例子:0cf58323c62a1ce60f25579926a25322&#34;&gt;使用tuple的例子&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code&gt;val (one, two) = (1, 2)     
+one //res0: Int = 1 
+two //res1: Int = 2         
+def sellerAndItemId(orderId: Int): (Int, Int) =
+   orderId match {  
+    case 0 =&amp;gt; (1, 2)    
+ }          
+val (sellerId, itemId) = sellerAndItemId(0)
+sellerId // sellerId: Int = 1
+itemId // itemId: Int = 2       
+val sellerItem = sellerAndItemId(0)
+sellerItem._1 //res4: Int = 1
+sellerItem._2 //res5: Int = 2
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;用模式匹配增加tuple可读性:0cf58323c62a1ce60f25579926a25322&#34;&gt;用模式匹配增加tuple可读性&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code&gt;val sampleList = List((1, 2, 3), (4, 5, 6), (7, 8, 9))
+sampleList.map(x =&amp;gt; s&amp;quot;${x._1}_${x._2}_${x._3}&amp;quot;)
+//res0: List[String] = List(1_2_3, 4_5_6, 7_8_9)
+sampleList.map {    
+  case (orderId, shopId, itemId) =&amp;gt;
+    s&amp;quot;${orderId}_${shopId}_$itemId&amp;quot;
+}   
+//res1: List[String] = List(1_2_3, 4_5_6, 7_8_9)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;上下两个map做了同样的事情,但下一个map为tuple中的三个值都给了名字,增加了代码的可读性.&lt;/p&gt;
+
+&lt;h3 id=&#34;match和java和switch很像-但有区别:0cf58323c62a1ce60f25579926a25322&#34;&gt;match和java和switch很像,但有区别&lt;/h3&gt;
+
+&lt;ol&gt;
+&lt;li&gt;match是表达式,会返回值&lt;/li&gt;
+&lt;li&gt;match不需要”break”&lt;/li&gt;
+&lt;li&gt;如果没有任何符合要求的case,match会抛异常,因为是表达式&lt;/li&gt;
+&lt;li&gt;match可以匹配任何东西,switch只能匹配数字或字符串常量&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;pre&gt;&lt;code&gt;//case如果是常量,就在值相等时匹配.
+//如果是变量,就匹配任何值.
+def describe(x: Any) = x match {
+   case 5 =&amp;gt; &amp;quot;five&amp;quot; 
+   case true =&amp;gt; &amp;quot;truth&amp;quot; 
+   case &amp;quot;hello&amp;quot; =&amp;gt; &amp;quot;hi!&amp;quot;    
+   case Nil =&amp;gt; &amp;quot;the empty list&amp;quot;
+   case somethingElse =&amp;gt; &amp;quot;something else &amp;quot; + somethingElse  
+}   
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;case class,tuple以及列表都可以在匹配的同时捕获内部的内容.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;case class Sample(a:String,b:String,c:String,d:String,e:String)
+def showContent(x: Any) =
+ x match {      
+  case Sample(a,b,c,d,e) =&amp;gt; 
+  s&amp;quot;Sample $a.$b.$c.$d.$e&amp;quot;  
+  case (a,b,c,d,e) =&amp;gt;   
+  s&amp;quot;tuple $a,$b,$c,$d,$e&amp;quot;   
+  case head::second::rest =&amp;gt;    
+  s&amp;quot;list head:$head second:$second rest:$rest&amp;quot;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;case-class:0cf58323c62a1ce60f25579926a25322&#34;&gt;Case class&lt;/h3&gt;
+
+&lt;ol&gt;
+&lt;li&gt;模式匹配过程中其实调用了类的unapply方法&lt;/li&gt;
+&lt;li&gt;Case class 是为模式匹配(以及其他一些方面)提供了特别的便利的类&lt;/li&gt;
+&lt;li&gt;Case class 还是普通的class,但是它自动为你实现了apply,unapply,toString等方法&lt;/li&gt;
+&lt;li&gt;其实tuple就是泛型的case class&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&#34;用-option-代替-null:0cf58323c62a1ce60f25579926a25322&#34;&gt;用 option 代替 null&lt;/h2&gt;
+
+&lt;h3 id=&#34;null-的问题:0cf58323c62a1ce60f25579926a25322&#34;&gt;null 的问题&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code&gt;Map&amp;lt;String, String&amp;gt; map = ???
+String valFor2014 = map.get(“1024”); // null
+
+if (valFor1024 == null)
+    abadon();
+else doSomething();
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;null到底代表key找不到还是说1024对应的值就是null?&lt;/li&gt;
+&lt;li&gt;某年某月某日,我把为null则abandon这段代码写了100遍.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;option介绍:0cf58323c62a1ce60f25579926a25322&#34;&gt;option介绍&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;option可以看作是一个容器,容器的size是1或0&lt;/li&gt;
+&lt;li&gt;Size为1的时候就是一个&lt;code&gt;Some[A](x: A)&lt;/code&gt;,size为0的时候就是一个&lt;code&gt;None&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;看看scala的map:0cf58323c62a1ce60f25579926a25322&#34;&gt;看看scala的map&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code&gt;def get(key: A): Option[B]
+
+def getOrElse[B1 &amp;gt;: B](key: A, default: =&amp;gt; B1): B1 = get(key) match {
+  case Some(v) =&amp;gt; v
+  case None =&amp;gt; default
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;可以区分Map中到底又没有这个key.&lt;/li&gt;
+&lt;li&gt;我见过许多java项目自己实现了&lt;code&gt;getOrElse&lt;/code&gt;这个方法并放在一个叫做MapUtils的类里.&lt;/li&gt;
+&lt;li&gt;为什么java经过这么多代演进,Map仍然没有默认包含这个方法,一直想不通.
+(写完这段突然发现java8开始包含getOrDefault了)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;好像没有太大区别:0cf58323c62a1ce60f25579926a25322&#34;&gt;好像没有太大区别?&lt;/h3&gt;
+
+&lt;p&gt;确实能够区分Map是无值还是值为null了.
+但是if(为null) 则 abandon 要写一百遍.
+&lt;code&gt;case Some(v) =&amp;gt; v&lt;/code&gt;
+&lt;code&gt;case None =&amp;gt; default&lt;/code&gt;
+似乎也得写一百遍.&lt;/p&gt;
+
+&lt;p&gt;不,不是这样的
+不要忘了option是个容器
+&lt;a href=&#34;http://www.scala-lang.org/api/2.11.7/index.html#scala.Option&#34;&gt;http://www.scala-lang.org/api/2.11.7/index.html#scala.Option&lt;/a&gt;&lt;/p&gt;
+
+&lt;h3 id=&#34;试试容器里的各种方法:0cf58323c62a1ce60f25579926a25322&#34;&gt;试试容器里的各种方法&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code&gt;val a: Option[String] = Some(&amp;quot;1024&amp;quot;)
+val b: Option[String] = None
+a.map(_.toInt)
+//res0: Option[Int] = Some(1024)
+b.map(_.toInt)
+//res1: Option[Int] = None,不会甩exception
+a.filter(_ == &amp;quot;2048&amp;quot;)
+//res2: Option[String] = None
+b.filter(_ == &amp;quot;2048&amp;quot;)
+//res3: Option[String] = None
+a.getOrElse(&amp;quot;2048&amp;quot;)
+//res4: String = 1024
+b.getOrElse(&amp;quot;2048&amp;quot;)
+//res5: String = 2048
+a.map(_.toInt)
+  .map(_ + 1)
+  .map(_ / 5)
+  .map(_ / 2 == 0) //res6: Option[Boolean] = Some(false)
+//如果是null,恐怕要一连check abandon四遍了
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;option配合其他容器使用:0cf58323c62a1ce60f25579926a25322&#34;&gt;option配合其他容器使用&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code&gt;val a: Seq[String] =
+  Seq(&amp;quot;1&amp;quot;, &amp;quot;2&amp;quot;, &amp;quot;3&amp;quot;, null, &amp;quot;4&amp;quot;)
+val b: Seq[Option[String]] =
+  Seq(Some(&amp;quot;1&amp;quot;), Some(&amp;quot;2&amp;quot;), Some(&amp;quot;3&amp;quot;), None, Some(&amp;quot;4&amp;quot;))
+
+a.filter(_ != null).map(_.toInt)
+//res0: Seq[Int] = List(1, 2, 3, 4)
+//如果你忘了检查,编译器是看不出来的,只能在跑崩的时候抛异常
+b.flatMap(_.map(_.toInt))
+//res1: Seq[Int] = List(1, 2, 3, 4)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;option帮助你把错误扼杀在编译阶段&lt;/li&gt;
+&lt;li&gt;flatMap则可以在过滤空值的同时将option恢复为原始数据.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;scala原生容器类都对option有良好支持&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;Seq(1,2,3).headOption
+//res0: Option[Int] = Some(1)
+
+Seq(1,2,3).find(_ == 5)
+//res1: Option[Int] = None
+
+Seq(1,2,3).lastOption
+//res2: Option[Int] = Some(3)
+
+Vector(1,2,3).reduceLeft(_ + _)
+//res3: Int = 6
+
+Vector(1,2,3).reduceLeftOption(_ + _)
+//res4: Option[Int] = Some(6)
+//在vector为空的时候也能用
+
+Seq(&amp;quot;a&amp;quot;, &amp;quot;b&amp;quot;, &amp;quot;c&amp;quot;, null, &amp;quot;d&amp;quot;).map(Option(_))
+//res0: Seq[Option[String]] =
+// List(Some(a), Some(b), Some(c), None, Some(d))
+//原始数据转换成option也很方便
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;用try类保存异常:0cf58323c62a1ce60f25579926a25322&#34;&gt;用Try类保存异常&lt;/h2&gt;
+
+&lt;h3 id=&#34;传统异常处理的局限性:0cf58323c62a1ce60f25579926a25322&#34;&gt;传统异常处理的局限性&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code&gt;try {
+  1024 / 0
+} catch {
+  case e: Throwable =&amp;gt; e.printStackTrace()
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;用try-catch的模式,异常必须在抛出的时候马上处理.
+然而在分布式计算中,我们很可能希望将异常集中到一起处理,来避免需要到每台机器上单独看错误日志的窘态.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt; val seq = Seq(0, 1, 2, 3, 4)
+ //seq: Seq[Int] = List(0, 1, 2, 3, 4)
+
+val seqTry = seq.map(x =&amp;gt; Try {
+  20 / x
+})
+//seqTry: Seq[scala.util.Try[Int]] = List(Failure(java.lang.ArithmeticException: devide by zero),Success(20), Success(10), Success(6), Success(5))
+
+val succSeq = seqTry.flatMap(_.toOption)
+//succSeq: Seq[Int] = List(20, 10, 6, 5) Try可以转换成Option
+val succSeq2 = seqTry.collect {
+  case Success(x) =&amp;gt; x
+}
+//succSeq2: Seq[Int] = List(20, 10, 6, 5) 和上一个是一样的
+val failSeq: Seq[Throwable] = seqTry.collect {
+  case Failure(e) =&amp;gt; e
+}
+//failSeq: Seq[Throwable] = List(java.lang.ArithmeticException: devide by zero)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Try实例可以序列化,并且在机器间传送.&lt;/p&gt;
+
+&lt;h2 id=&#34;函数是一等公民:0cf58323c62a1ce60f25579926a25322&#34;&gt;函数是一等公民&lt;/h2&gt;
+
+&lt;h3 id=&#34;一个需求:0cf58323c62a1ce60f25579926a25322&#34;&gt;一个需求&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;假设我们需要检查许多的数字是否符合某一范围&lt;/li&gt;
+&lt;li&gt;范围存储在外部系统中,并且可能随时更改&lt;/li&gt;
+&lt;li&gt;数字范围像这样存储着”&amp;gt;= 3,&amp;lt; 7”&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;一个java版本&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;List&amp;lt;String&amp;gt; params = new LinkedList&amp;lt;&amp;gt;();
+List&amp;lt;Integer&amp;gt; nums = new LinkedList&amp;lt;&amp;gt;();
+List&amp;lt;String&amp;gt; marks = new LinkedList&amp;lt;&amp;gt;();
+
+public JavaRangeMatcher(List&amp;lt;String&amp;gt; params) {
+    this.params = params;
+    for (String param : params) {
+        String[] markNum = param.split(&amp;quot; &amp;quot;);
+        marks.add(markNum[0]);
+        nums.add(Integer.parseInt(markNum[1]));
+    }
+}
+
+public boolean check(int input) {
+    for (int i = 0; i &amp;lt; marks.size(); i++) {
+        int num = nums.get(i);
+        String mark = marks.get(i);
+        if (mark.equals(&amp;quot;&amp;gt;&amp;quot;) &amp;amp;&amp;amp; input &amp;lt;= num) return false;
+        if (mark.equals(&amp;quot;&amp;gt;=&amp;quot;) &amp;amp;&amp;amp; input &amp;lt; num) return false;
+        if (mark.equals(&amp;quot;&amp;lt;&amp;quot;) &amp;amp;&amp;amp; input &amp;gt;= num) return false;
+        if (mark.equals(&amp;quot;&amp;lt;=&amp;quot;) &amp;amp;&amp;amp; input &amp;gt; num) return false;
+    }
+    return true;
+}
+
+List&amp;lt;String&amp;gt; paramsList = new LinkedList&amp;lt;String&amp;gt;() {{
+    add(“&amp;gt;= 3”);
+    add(“&amp;lt; 7”);
+}};
+JavaRangeMatcher matcher = new JavaRangeMatcher(paramsList);
+int[] inputs = new int[]{1, 3, 5, 7, 9};
+for (int input : inputs) {
+    System.out.println(matcher.check(input));
+}
+//给自己有限的时间,想想又没有性能优化的余地
+//我们一起来跑跑看
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;一个 scala 版本&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;def exprToInt(expr: String): Int =&amp;gt; Boolean = {
+  val Array(mark, num, _*) = expr.split(&amp;quot; &amp;quot;)
+  val numInt = num.toInt
+  mark match {
+    case &amp;quot;&amp;lt;&amp;quot; =&amp;gt; numInt.&amp;gt;
+    case &amp;quot;&amp;gt;&amp;quot; =&amp;gt; numInt.&amp;lt;
+    case &amp;quot;&amp;gt;=&amp;quot; =&amp;gt; numInt.&amp;lt;=
+    case &amp;quot;&amp;lt;=&amp;quot; =&amp;gt; numInt.&amp;gt;=
+  } //返回函数的函数
+}
+
+case class RangeMatcher(range: Seq[String]) {
+  val rangeFunc: Seq[(Int) =&amp;gt; Boolean] = range.map(exprToInt)
+
+  def check(input: Int) = rangeFunc.forall(_(input))
+}
+
+def main(args: Array[String]) {
+  val requirements = Seq(&amp;quot;&amp;gt;= 3&amp;quot;, &amp;quot;&amp;lt; 7&amp;quot;)
+  val rangeMatcher = RangeMatcher(requirements)
+  val results = Seq(1, 3, 5, 7, 9).map(rangeMatcher.check)
+  println(results.mkString(&amp;quot;,&amp;quot;))
+  //false,true,true,false,false
+}
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;关于性能:0cf58323c62a1ce60f25579926a25322&#34;&gt;关于性能&lt;/h2&gt;
+
+&lt;p&gt;这里有一个&lt;a href=&#34;http://benchmarksgame.alioth.debian.org/u64/performance.php?test=binarytrees&amp;amp;sort=elapsed&#34;&gt;性能测试&lt;/a&gt;网站&lt;/p&gt;
+
+&lt;p&gt;我对于网站测试的结果,我总结的情况就是两点.
+1. 排在后面的基本都是动态类型语言,静态类型语言相对容易优化到性能差不多的结果.
+2. 同一个语言代码写得好差产生的性能差异,远远比各种语言最好的代码性能差异大.&lt;/p&gt;
+
+&lt;h3 id=&#34;总的来说-程序员越自由-程序性能就越差:0cf58323c62a1ce60f25579926a25322&#34;&gt;总的来说,程序员越自由,程序性能就越差&lt;/h3&gt;
+
+&lt;p&gt;不过也有返利,我们之前那个程序就是.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;//java版本
+public static void main(String[] args) {
+    List&amp;lt;String&amp;gt; paramsList = new LinkedList&amp;lt;String&amp;gt;() {{
+        add(&amp;quot;&amp;gt;= 3&amp;quot;);
+        add(&amp;quot;&amp;lt; 7&amp;quot;);
+    }};
+    JavaRangeMatcher matcher = new JavaRangeMatcher(paramsList);
+    Random random = new Random();
+    long timeBegin = System.currentTimeMillis();
+    for (int i = 0; i &amp;lt; 100000000; i++) {
+        int input = random.nextInt() % 10;
+        matcher.check(input);
+    }
+    long timeEnd = System.currentTimeMillis();
+    System.out.println(&amp;quot;java 消耗时间: &amp;quot; + (timeEnd - timeBegin) + &amp;quot; 毫秒&amp;quot;);
+    //java 消耗时间: 3263 毫秒
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;//scala版本
+def main(args: Array[String]) {
+  val requirements = Seq(&amp;quot;&amp;gt;= 3&amp;quot;, &amp;quot;&amp;lt; 7&amp;quot;)
+  val rangeMatcher = RangeMatcher(requirements)
+  val timeBegin = System.currentTimeMillis()
+  0 until 100000000 foreach {
+    case _ =&amp;gt;
+      rangeMatcher.check(Random.nextInt(10))
+  }
+  val timeEnd = System.currentTimeMillis()
+  println(s&amp;quot;scala 消耗时间 ${timeEnd - timeBegin} 毫秒&amp;quot;)
+  //scala 消耗时间 2617 毫秒
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;想想这是为什么?&lt;/p&gt;
+
+&lt;h2 id=&#34;推荐资源:0cf58323c62a1ce60f25579926a25322&#34;&gt;推荐资源&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;尽情地使用worksheet吧!&lt;/li&gt;
+&lt;li&gt;尽情地用IDE查看标准库的源代码吧!&lt;/li&gt;
+&lt;li&gt;推荐coursera上的课程&lt;a href=&#34;https://www.coursera.org/course/progfun&#34;&gt;progfun&lt;/a&gt;和&lt;a href=&#34;https://www.coursera.org/course/reactive&#34;&gt;reactive&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;尽情地查看文档,推荐软件Dash&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>
