@@ -1,0 +1,22 @@
+baseurl = "http://renkai.org/"
+languageCode = "zh-CN"
+title = "Renkai's blog"
+
+[params]
+    sidebartitle = "Renkai's Blog"
+    sidebartagline = "Happy Hacking"
+
+[[menu.social]]
+    pre = "<i class='fa fa-weibo'></i>"
+    url = "http://weibo.com/renkai1991"
+    identifier = "weibo"
+
+[[menu.social]]
+    pre = "<i class='fa fa-github'></i>"
+    url = "https://github.com/Renkai"
+    identifier = "github"
+
+[[menu.social]]
+    pre = "<i class='fa fa-stack-overflow'></i>"
+    url = "http://stackoverflow.com/users/2655102/renkai"
+    identifier = "stack-overflow"
