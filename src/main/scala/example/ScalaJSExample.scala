@@ -18,6 +18,9 @@ object ScalaJSExample {
       |
       |    <p>我的学习笔记在 <a href="http://segmentfault.com/blog/sungantaixian">Segmentfault</a></p>
       |
+      |    <p>我的周记在 <a href="http://www.jianshu.com/users/T6U8Mb">简书</a></p>
+      |
+      |
       |    <p>你还可以在这些地方找到我:</p>
       |
       |    <p>
