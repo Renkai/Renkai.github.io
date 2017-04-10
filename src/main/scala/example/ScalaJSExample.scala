@@ -16,7 +16,7 @@ object ScalaJSExample {
       |
       |    <p>我是一名程序员,现在关心的方向是大数据/Scala相关</p>
       |
-      |    <p>我的学习笔记在 <a href="http://segmentfault.com/blog/sungantaixian">Segmentfault</a></p>
+      |    <p>我的学习笔记在 <a href="http://segmentfault.com/blog/sungantaixian">Segmentfault</a> <a href="http://stackoverflow.com/users/2655102/renkai">Stack Overflow</a></p>
       |
       |    <p>我的周记在 <a href="http://www.jianshu.com/users/T6U8Mb">简书</a></p>
       |
